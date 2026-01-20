@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../providers/task_notifier.dart';
+import '../../timer/presentation/providers/timer_notifier.dart';
+import '../../../../core/providers/nav_provider.dart';
 
 class TaskListWidget extends ConsumerWidget {
   const TaskListWidget({super.key});
@@ -107,13 +109,30 @@ class TaskListWidget extends ConsumerWidget {
                             fontSize: 16,
                           ),
                         ),
-                        trailing: task.estimatedPomodoros > 1
-                            ? Badge(
-                                label: Text('${task.estimatedPomodoros}'),
-                                backgroundColor: Colors.grey.shade200,
-                                textColor: Colors.black,
-                              )
-                            : null,
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (task.estimatedPomodoros > 1)
+                              Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: Badge(
+                                  label: Text('${task.estimatedPomodoros}'),
+                                  backgroundColor: Colors.grey.shade200,
+                                  textColor: Colors.black,
+                                ),
+                              ),
+                            IconButton(
+                              icon: const Icon(Icons.play_arrow_rounded, color: Colors.orangeAccent, size: 32),
+                              onPressed: () {
+                                // 1. Set the Task in TimerNotifier
+                                ref.read(timerNotifierProvider.notifier).setFocusedTask(task.title);
+
+                                // 2. Switch Tab to Home (Index 0)
+                                ref.read(bottomNavProvider.notifier).state = 0;
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

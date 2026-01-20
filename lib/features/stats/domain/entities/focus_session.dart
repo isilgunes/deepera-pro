@@ -18,4 +18,21 @@ class FocusSession extends HiveObject {
     required this.durationInMinutes,
     this.taskName,
   });
+
+  // JSON Serialization
+  Map<String, dynamic> toMap() {
+    return {
+      'completionTime': completionTime.toIso8601String(),
+      'durationInMinutes': durationInMinutes,
+      'taskName': taskName,
+    };
+  }
+
+  factory FocusSession.fromMap(Map<String, dynamic> map) {
+    return FocusSession(
+      completionTime: DateTime.parse(map['completionTime']),
+      durationInMinutes: map['durationInMinutes'] as int,
+      taskName: map['taskName'] as String?,
+    );
+  }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../providers/settings_notifier.dart';
 import '../managers/theme_manager.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -256,6 +257,70 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           border: Border.all(color: contentColor, width: 2),
                         ),
                       ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 24),
+                _buildSectionHeader('ACCOUNT'),
+
+                // Account Card
+                _buildCard(
+                  cardColor: cardColor,
+                  children: [
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(
+                        ref.read(authRepositoryProvider).currentUser?.email ?? 'User',
+                         style: GoogleFonts.outfit(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: contentColor,
+                         ),
+                      ),
+                      subtitle: Text(
+                        'Tap to Sign Out',
+                         style: GoogleFonts.outfit(
+                            fontSize: 12,
+                            color: contentColor.withOpacity(0.7),
+                         ),
+                      ),
+                      trailing: Icon(Icons.logout, color: Colors.red),
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            backgroundColor: cardColor,
+                            title: Text(
+                              'Sign Out',
+                              style: GoogleFonts.outfit(color: contentColor, fontWeight: FontWeight.bold),
+                            ),
+                            content: Text(
+                              'Are you sure you want to sign out?',
+                              style: GoogleFonts.outfit(color: contentColor),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text(
+                                  'Cancel',
+                                  style: GoogleFonts.outfit(color: contentColor),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () async {
+                                  Navigator.pop(context); // Close dialog
+                                  await ref.read(authRepositoryProvider).signOut();
+                                },
+                                child: Text(
+                                  'Sign Out',
+                                  style: GoogleFonts.outfit(color: Colors.red, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),

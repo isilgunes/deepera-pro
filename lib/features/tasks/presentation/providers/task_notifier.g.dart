@@ -21,7 +21,7 @@ final taskRepositoryProvider = AutoDisposeProvider<TaskRepository>.internal(
 );
 
 typedef TaskRepositoryRef = AutoDisposeProviderRef<TaskRepository>;
-String _$taskNotifierHash() => r'bba550b50643158909cb6a9bd330991e64515745';
+String _$taskNotifierHash() => r'33b88d652f17befbf3170c61873ee07da988b012';
 
 /// See also [TaskNotifier].
 @ProviderFor(TaskNotifier)

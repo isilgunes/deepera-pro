@@ -26,7 +26,8 @@ class TimerEntity with _$TimerEntity {
     required TimerStatus status,
     required TimerType type,
     @Default(0) int roundCount,
-    String? currentTaskName,
+    @Default(false) bool isAlarmPlaying,
+    String? currentTaskTitle,
   }) = _TimerEntity;
 
   factory TimerEntity.initial() => const TimerEntity(
@@ -35,6 +36,7 @@ class TimerEntity with _$TimerEntity {
         status: TimerStatus.initial,
         type: TimerType.pomodoro,
         roundCount: 0,
-        currentTaskName: null,
+        isAlarmPlaying: false,
+        currentTaskTitle: null,
       );
 }

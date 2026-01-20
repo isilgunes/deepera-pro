@@ -21,7 +21,8 @@ mixin _$TimerEntity {
   TimerStatus get status => throw _privateConstructorUsedError;
   TimerType get type => throw _privateConstructorUsedError;
   int get roundCount => throw _privateConstructorUsedError;
-  String? get currentTaskName => throw _privateConstructorUsedError;
+  bool get isAlarmPlaying => throw _privateConstructorUsedError;
+  String? get currentTaskTitle => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $TimerEntityCopyWith<TimerEntity> get copyWith =>
@@ -40,7 +41,8 @@ abstract class $TimerEntityCopyWith<$Res> {
       TimerStatus status,
       TimerType type,
       int roundCount,
-      String? currentTaskName});
+      bool isAlarmPlaying,
+      String? currentTaskTitle});
 }
 
 /// @nodoc
@@ -61,7 +63,8 @@ class _$TimerEntityCopyWithImpl<$Res, $Val extends TimerEntity>
     Object? status = null,
     Object? type = null,
     Object? roundCount = null,
-    Object? currentTaskName = freezed,
+    Object? isAlarmPlaying = null,
+    Object? currentTaskTitle = freezed,
   }) {
     return _then(_value.copyWith(
       remainingSeconds: null == remainingSeconds
@@ -84,9 +87,13 @@ class _$TimerEntityCopyWithImpl<$Res, $Val extends TimerEntity>
           ? _value.roundCount
           : roundCount // ignore: cast_nullable_to_non_nullable
               as int,
-      currentTaskName: freezed == currentTaskName
-          ? _value.currentTaskName
-          : currentTaskName // ignore: cast_nullable_to_non_nullable
+      isAlarmPlaying: null == isAlarmPlaying
+          ? _value.isAlarmPlaying
+          : isAlarmPlaying // ignore: cast_nullable_to_non_nullable
+              as bool,
+      currentTaskTitle: freezed == currentTaskTitle
+          ? _value.currentTaskTitle
+          : currentTaskTitle // ignore: cast_nullable_to_non_nullable
               as String?,
     ) as $Val);
   }
@@ -106,7 +113,8 @@ abstract class _$$TimerEntityImplCopyWith<$Res>
       TimerStatus status,
       TimerType type,
       int roundCount,
-      String? currentTaskName});
+      bool isAlarmPlaying,
+      String? currentTaskTitle});
 }
 
 /// @nodoc
@@ -125,7 +133,8 @@ class __$$TimerEntityImplCopyWithImpl<$Res>
     Object? status = null,
     Object? type = null,
     Object? roundCount = null,
-    Object? currentTaskName = freezed,
+    Object? isAlarmPlaying = null,
+    Object? currentTaskTitle = freezed,
   }) {
     return _then(_$TimerEntityImpl(
       remainingSeconds: null == remainingSeconds
@@ -148,9 +157,13 @@ class __$$TimerEntityImplCopyWithImpl<$Res>
           ? _value.roundCount
           : roundCount // ignore: cast_nullable_to_non_nullable
               as int,
-      currentTaskName: freezed == currentTaskName
-          ? _value.currentTaskName
-          : currentTaskName // ignore: cast_nullable_to_non_nullable
+      isAlarmPlaying: null == isAlarmPlaying
+          ? _value.isAlarmPlaying
+          : isAlarmPlaying // ignore: cast_nullable_to_non_nullable
+              as bool,
+      currentTaskTitle: freezed == currentTaskTitle
+          ? _value.currentTaskTitle
+          : currentTaskTitle // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
   }
@@ -165,7 +178,8 @@ class _$TimerEntityImpl implements _TimerEntity {
       required this.status,
       required this.type,
       this.roundCount = 0,
-      this.currentTaskName});
+      this.isAlarmPlaying = false,
+      this.currentTaskTitle});
 
   @override
   final int remainingSeconds;
@@ -179,11 +193,14 @@ class _$TimerEntityImpl implements _TimerEntity {
   @JsonKey()
   final int roundCount;
   @override
-  final String? currentTaskName;
+  @JsonKey()
+  final bool isAlarmPlaying;
+  @override
+  final String? currentTaskTitle;
 
   @override
   String toString() {
-    return 'TimerEntity(remainingSeconds: $remainingSeconds, initialDuration: $initialDuration, status: $status, type: $type, roundCount: $roundCount, currentTaskName: $currentTaskName)';
+    return 'TimerEntity(remainingSeconds: $remainingSeconds, initialDuration: $initialDuration, status: $status, type: $type, roundCount: $roundCount, isAlarmPlaying: $isAlarmPlaying, currentTaskTitle: $currentTaskTitle)';
   }
 
   @override
@@ -199,13 +216,22 @@ class _$TimerEntityImpl implements _TimerEntity {
             (identical(other.type, type) || other.type == type) &&
             (identical(other.roundCount, roundCount) ||
                 other.roundCount == roundCount) &&
-            (identical(other.currentTaskName, currentTaskName) ||
-                other.currentTaskName == currentTaskName));
+            (identical(other.isAlarmPlaying, isAlarmPlaying) ||
+                other.isAlarmPlaying == isAlarmPlaying) &&
+            (identical(other.currentTaskTitle, currentTaskTitle) ||
+                other.currentTaskTitle == currentTaskTitle));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, remainingSeconds,
-      initialDuration, status, type, roundCount, currentTaskName);
+  int get hashCode => Object.hash(
+      runtimeType,
+      remainingSeconds,
+      initialDuration,
+      status,
+      type,
+      roundCount,
+      isAlarmPlaying,
+      currentTaskTitle);
 
   @JsonKey(ignore: true)
   @override
@@ -221,7 +247,8 @@ abstract class _TimerEntity implements TimerEntity {
       required final TimerStatus status,
       required final TimerType type,
       final int roundCount,
-      final String? currentTaskName}) = _$TimerEntityImpl;
+      final bool isAlarmPlaying,
+      final String? currentTaskTitle}) = _$TimerEntityImpl;
 
   @override
   int get remainingSeconds;
@@ -234,7 +261,9 @@ abstract class _TimerEntity implements TimerEntity {
   @override
   int get roundCount;
   @override
-  String? get currentTaskName;
+  bool get isAlarmPlaying;
+  @override
+  String? get currentTaskTitle;
   @override
   @JsonKey(ignore: true)
   _$$TimerEntityImplCopyWith<_$TimerEntityImpl> get copyWith =>

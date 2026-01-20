@@ -8,75 +8,64 @@ import '../../features/tasks/presentation/pages/tasks_screen.dart';
 import '../../features/stats/presentation/pages/stats_screen.dart';
 import '../../features/settings/presentation/pages/settings_screen.dart';
 
+import '../../features/auth/presentation/pages/login_screen.dart';
+import '../../features/auth/presentation/providers/auth_provider.dart';
+
 part 'app_router.g.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
-final _shellNavigatorTimerKey = GlobalKey<NavigatorState>(debugLabel: 'shellTimer');
-final _shellNavigatorTasksKey = GlobalKey<NavigatorState>(debugLabel: 'shellTasks');
-final _shellNavigatorStatsKey = GlobalKey<NavigatorState>(debugLabel: 'shellStats');
-final _shellNavigatorSettingsKey = GlobalKey<NavigatorState>(debugLabel: 'shellSettings');
 
 @riverpod
 GoRouter appRouter(AppRouterRef ref) {
+  final authState = ref.watch(authStateProvider);
+
   return GoRouter(
-    initialLocation: '/timer',
+    initialLocation: '/',
     navigatorKey: _rootNavigatorKey,
     debugLogDiagnostics: true,
+    redirect: (context, state) {
+      final isLoading = authState.isLoading;
+      final hasUser = authState.valueOrNull != null;
+      final isLogin = state.uri.toString() == '/login';
+
+      if (isLoading) return null; // Wait for auth check
+
+      if (!hasUser) {
+        return isLogin ? null : '/login';
+      }
+
+      if (isLogin) {
+        return '/'; // Already logged in
+      }
+
+      return null;
+    },
     routes: [
-      StatefulShellRoute.indexedStack(
-        builder: (context, state, navigationShell) {
-          return ScaffoldWithNavBar(navigationShell: navigationShell);
-        },
-        branches: [
-          // Branch 1: Timer
-          StatefulShellBranch(
-            navigatorKey: _shellNavigatorTimerKey,
-            routes: [
-              GoRoute(
-                path: '/timer',
-                pageBuilder: (context, state) => const NoTransitionPage(
-                  child: TimerScreen(),
-                ),
-              ),
-            ],
+      GoRoute(
+        path: '/',
+        builder: (context, state) => const ScaffoldWithNavBar(),
+        routes: [
+           GoRoute(
+            path: 'timer',
+            redirect: (_, __) => '/',
           ),
-          // Branch 2: Tasks
-          StatefulShellBranch(
-            navigatorKey: _shellNavigatorTasksKey,
-            routes: [
-              GoRoute(
-                path: '/tasks',
-                pageBuilder: (context, state) => const NoTransitionPage(
-                  child: TasksScreen(),
-                ),
-              ),
-            ],
+           GoRoute(
+            path: 'tasks',
+            redirect: (_, __) => '/',
           ),
-          // Branch 3: Stats
-          StatefulShellBranch(
-            navigatorKey: _shellNavigatorStatsKey,
-            routes: [
-              GoRoute(
-                path: '/stats',
-                pageBuilder: (context, state) => const NoTransitionPage(
-                  child: StatsScreen(),
-                ),
-              ),
-            ],
+           GoRoute(
+            path: 'stats',
+             redirect: (_, __) => '/',
           ),
-          // Branch 4: Settings
-          StatefulShellBranch(
-            navigatorKey: _shellNavigatorSettingsKey,
-            routes: [
-              GoRoute(
-                path: '/settings',
-                pageBuilder: (context, state) => const NoTransitionPage(
-                  child: SettingsScreen(),
-                ),
-              ),
-            ],
+           GoRoute(
+            path: 'settings',
+             redirect: (_, __) => '/',
           ),
-        ],
+        ]
+      ),
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => const LoginScreen(),
       ),
     ],
   );

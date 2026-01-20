@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:io' show Platform;
 import 'package:hive_flutter/hive_flutter.dart';
 import 'features/tasks/domain/entities/task_entity.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,8 +9,19 @@ import 'core/services/notification_service.dart';
 import 'features/settings/presentation/managers/theme_manager.dart';
 import 'features/stats/domain/entities/focus_session.dart';
 import 'core/router/app_router.dart';
+import 'core/services/foreground_service.dart';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
+import 'package:timezone/data/latest.dart' as tz;
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Ensure bindings first
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   await Hive.initFlutter();
   Hive.registerAdapter(TaskEntityAdapter());
   Hive.registerAdapter(FocusSessionAdapter());
@@ -16,9 +29,20 @@ void main() async {
   await Hive.openBox<FocusSession>('focus_sessions');
   await Hive.openBox('settings'); // Open settings box
   
-  final notificationService = NotificationService();
-  await notificationService.init();
-  await notificationService.requestPermissions();
+  tz.initializeTimeZones(); // Initialize Timezones
+  
+  // Platform specific services (Mobile Only)
+  if (!kIsWeb) {
+    if (Platform.isAndroid || Platform.isIOS) {
+       final notificationService = NotificationService();
+       await notificationService.init();
+       await notificationService.requestPermissions();
+       await notificationService.scheduleDailyQuote(); 
+    
+      // Init Foreground Service
+      await ForegroundServiceManager.init();
+    }
+  }
 
   runApp(const ProviderScope(child: MyApp()));
 }

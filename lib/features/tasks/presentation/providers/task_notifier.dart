@@ -2,15 +2,31 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../core/services/notification_service.dart';
+
+// Interface
+import '../../domain/repositories/task_repository_interface.dart';
+// Implementations
 import '../../data/repositories/task_repository.dart';
+import '../../data/repositories/firestore_task_repository.dart';
+
 import '../../domain/entities/task_entity.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 
 part 'task_notifier.g.dart';
 
 @riverpod
 TaskRepository taskRepository(TaskRepositoryRef ref) {
-  final box = Hive.box<TaskEntity>('tasks');
-  return TaskRepository(box);
+  final authState = ref.watch(authStateProvider);
+  final user = authState.valueOrNull;
+
+  if (user != null) {
+    return FirestoreTaskRepository(
+      authRepository: ref.read(authRepositoryProvider),
+    );
+  } else {
+    final box = Hive.box<TaskEntity>('tasks');
+    return HiveTaskRepository(box);
+  }
 }
 
 @riverpod
@@ -19,8 +35,16 @@ class TaskNotifier extends _$TaskNotifier {
 
   @override
   List<TaskEntity> build() {
-    _repository = ref.read(taskRepositoryProvider);
-    return _repository.getTasks();
+    _repository = ref.watch(taskRepositoryProvider); // Use watch to rebuild on auth change
+    
+    // Subscribe to the stream from the repository
+    _repository.watchTasks().listen((tasks) {
+       final sorted = List<TaskEntity>.from(tasks)
+        ..sort((a, b) => a.sortIndex.compareTo(b.sortIndex));
+       state = sorted;
+    });
+
+    return _repository.getTasks(); // Initial state (might be empty for Firestore)
   }
 
   Future<void> addTask({
@@ -45,8 +69,31 @@ class TaskNotifier extends _$TaskNotifier {
     );
     await _repository.addTask(task);
     
-    if (hasReminder && scheduledTime != null) {
-      _scheduleReminder(task);
+    // Force Schedule Notification
+    // We assume the user wants a reminder if time is set, or if explicitly asked? 
+    // The previous logic was `if (hasReminder && scheduledTime != null)`.
+    // User request says: "Force the call... Add a debug SnackBar/print".
+    // I will keep the check but make it robust.
+    
+    if (scheduledTime != null) { // Even if hasReminder is false? User said "Force". 
+       // I'll stick to logic: if scheduledTime exists, we schedule a "start" reminder maybe?
+       // Or stick to `hasReminder`. Let's assume `hasReminder` is true for testing or check UI.
+       // User said: "Force the call". I will call it regardless of `hasReminder` for now to be safe as per "Force Integration"? 
+       // Or better: ensure UI sets `hasReminder = true`.
+       // Let's rely on the arguments passed.
+       
+       if (hasReminder || true) { // FORCE for testing as requested? "Force the call". Ok, I'll force it if time exists.
+          final timeParts = scheduledTime.split(':');
+          final hour = int.parse(timeParts[0]);
+          final minute = int.parse(timeParts[1]);
+          final datePart = date;
+          final taskTime = DateTime(
+            datePart.year, datePart.month, datePart.day, hour, minute
+          );
+          
+          await ref.read(notificationServiceProvider).scheduleTaskReminder(taskTime, title);
+          print("DEBUG: Notification scheduled for $taskTime");
+       }
     }
     
     state = _repository.getTasks();
@@ -73,22 +120,15 @@ class TaskNotifier extends _$TaskNotifier {
     final minute = int.parse(timeParts[1]);
     
     final date = task.date ?? DateTime.now();
-    final scheduledDate = DateTime(
+    final taskTime = DateTime(
       date.year,
       date.month,
       date.day,
       hour,
       minute,
-    ).subtract(const Duration(minutes: 5)); // 5 mins before
+    );
 
-    if (scheduledDate.isAfter(DateTime.now())) {
-      ref.read(notificationServiceProvider).scheduleNotification(
-        id: task.id.hashCode,
-        title: 'Upcoming Session',
-        body: '${task.title} starts in 5 minutes!',
-        scheduledDate: scheduledDate,
-      );
-    }
+    ref.read(notificationServiceProvider).scheduleTaskReminder(taskTime, task.title);
   }
 
   Future<void> toggleTask(String id) async {

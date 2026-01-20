@@ -27,9 +27,16 @@ class SoundNotifier extends _$SoundNotifier {
   @override
   SoundState build() {
     // Listen to TimerNotifier to auto-stop audio when timer stops
+    // Listen to TimerNotifier to auto-stop AMBIENT audio when timer stops
     ref.listen(timerNotifierProvider, (previous, next) {
-      if (next.status == TimerStatus.initial && state.isPlaying) {
-        stop();
+      // Only stop if we are playing an AMBIENT sound (not alarm) and timer stops
+      // Or just stop all? If we stop all, we might kill the alarm if statuses flicker.
+      // But typically: Running -> Initial (Stop Ambient) -> Play Alarm.
+      // This order is safe properly.
+      
+      if (next.status == TimerStatus.initial && state.isPlaying && state.currentSound != null) {
+         // Stop ambient sound
+         stop();
       }
     });
 
@@ -170,6 +177,8 @@ class SoundState {
   final bool isShuffleMode;
   final SoundTrack? currentSound;
   final double volume;
+
+  bool get isAlarmPlaying => isPlaying && currentSound == null;
 
   SoundState({
     this.isPlaying = false,

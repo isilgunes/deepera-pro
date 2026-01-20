@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "528993858070",
+    "project_id": "pomodoro-cloud-sync",
+    "storage_bucket": "pomodoro-cloud-sync.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:528993858070:android:00fce007d1f3de6ef97b37",
+        "android_client_info": {
+          "package_name": "com.antigravity.pomodoro_timer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "528993858070-cr2rtare2h6e2t4ms1cj0lot1etfc827.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.antigravity.pomodoro_timer",
+            "certificate_hash": "0e66c86c5272d70f91c937384dc9c8352e7dbc68"
+          }
+        },
+        {
+          "client_id": "528993858070-4r3s66oftij2gj0f8l5u8rajd05kvlm2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAGu6rEWEm686pPt8pcEiMmG8EQ9m731rQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "528993858070-4r3s66oftij2gj0f8l5u8rajd05kvlm2.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "528993858070-32tue17b1da3mfnri6lkg5vgiuqte2ag.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.antigravity.pomodoroTimer"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

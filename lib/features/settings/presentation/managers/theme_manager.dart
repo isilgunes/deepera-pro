@@ -4,12 +4,13 @@ import 'package:google_fonts/google_fonts.dart';
 
 // 1. Define distinct nice-looking colors
 const List<Color> appThemeColors = [
-  Color(0xFFE57373), // Red (Default)
+  Color(0xFF26C6DA), // Turquoise (Cyan 400 - More Vibrant)
+  Color(0xFFE57373), // Red
   Color(0xFF81C784), // Green
   Color(0xFF64B5F6), // Blue
   Color(0xFFFFB74D), // Orange
   Color(0xFFBA68C8), // Purple
-  Color(0xFF4DB6AC), // Teal
+  Colors.teal,       // Teal
   Color(0xFFFFD54F), // Amber
   Color(0xFFA1887F), // Brown
   Color(0xFF90A4AE), // Blue Grey

@@ -8,6 +8,7 @@ import '../../domain/entities/task_entity.dart';
 import '../../../settings/presentation/managers/theme_manager.dart';
 import '../../../../core/app_providers.dart';
 import '../../../../features/timer/presentation/providers/timer_notifier.dart';
+import '../../../../core/providers/nav_provider.dart';
 
 final selectedDateProvider = StateProvider<DateTime>((ref) => DateTime.now());
 
@@ -323,8 +324,8 @@ class _TasksScreenState extends ConsumerState<TasksScreen> {
                                        IconButton(
                                          icon: Icon(Icons.play_circle_outline, color: themeColor, size: 28),
                                          onPressed: () {
-                                            ref.read(timerNotifierProvider.notifier).setTask(task.title);
-                                            ref.read(bottomNavIndexProvider.notifier).state = 0; // Switch to Timer
+                                            ref.read(timerNotifierProvider.notifier).setFocusedTask(task.title);
+                                            ref.read(bottomNavProvider.notifier).state = 0; // Switch to Timer
                                          },
                                        ),
                                        // Delete Button

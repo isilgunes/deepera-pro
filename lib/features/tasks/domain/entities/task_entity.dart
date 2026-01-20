@@ -60,4 +60,31 @@ class TaskEntity extends HiveObject {
       sortIndex: sortIndex ?? this.sortIndex,
     );
   }
+
+  // JSON Serialization for Firestore
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'title': title,
+      'isCompleted': isCompleted,
+      'estimatedPomodoros': estimatedPomodoros,
+      'date': date?.toIso8601String(),
+      'scheduledTime': scheduledTime,
+      'hasReminder': hasReminder,
+      'sortIndex': sortIndex,
+    };
+  }
+
+  factory TaskEntity.fromMap(Map<String, dynamic> map) {
+    return TaskEntity(
+      id: map['id'] as String,
+      title: map['title'] as String,
+      isCompleted: map['isCompleted'] as bool? ?? false,
+      estimatedPomodoros: map['estimatedPomodoros'] as int? ?? 1,
+      date: map['date'] != null ? DateTime.parse(map['date']) : null,
+      scheduledTime: map['scheduledTime'] as String?,
+      hasReminder: map['hasReminder'] as bool? ?? false,
+      sortIndex: map['sortIndex'] as int? ?? 0,
+    );
+  }
 }

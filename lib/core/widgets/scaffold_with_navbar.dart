@@ -1,36 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/nav_provider.dart';
 
-class ScaffoldWithNavBar extends StatelessWidget {
-  const ScaffoldWithNavBar({
-    required this.navigationShell,
-    super.key,
-  });
+// Import Screens - Adjust paths if necessary
+import '../../features/timer/presentation/pages/timer_screen.dart';
+import '../../features/tasks/presentation/pages/tasks_screen.dart';
+import '../../features/stats/presentation/pages/stats_screen.dart';
+import '../../features/settings/presentation/pages/settings_screen.dart';
 
-  final StatefulNavigationShell navigationShell;
-
-  void _goBranch(int index) {
-    navigationShell.goBranch(
-      index,
-      // A common pattern when using bottom navigation bars is to support
-      // navigating to the initial location when tapping the item that is
-      // already active. This example demonstrates how to support this behavior,
-      // using the initialLocation parameter of goBranch.
-      initialLocation: index == navigationShell.currentIndex,
-    );
-  }
+class ScaffoldWithNavBar extends ConsumerWidget {
+  const ScaffoldWithNavBar({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentIndex = ref.watch(bottomNavProvider);
+
     return Scaffold(
-      body: navigationShell,
+      // IndexedStack preserves the state of each page!
+      body: IndexedStack(
+        index: currentIndex,
+        children: const [
+          TimerScreen(),
+          TasksScreen(),
+          StatsScreen(),
+          SettingsScreen(),
+        ],
+      ),
       bottomNavigationBar: NavigationBar(
-        selectedIndex: navigationShell.currentIndex,
+        selectedIndex: currentIndex,
+        onDestinationSelected: (index) {
+          ref.read(bottomNavProvider.notifier).state = index;
+        },
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.timer_outlined),
             selectedIcon: Icon(Icons.timer),
-            label: 'Timer',
+            label: 'Focus',
           ),
           NavigationDestination(
             icon: Icon(Icons.check_circle_outline),
@@ -48,7 +53,6 @@ class ScaffoldWithNavBar extends StatelessWidget {
             label: 'Settings',
           ),
         ],
-        onDestinationSelected: _goBranch,
       ),
     );
   }
